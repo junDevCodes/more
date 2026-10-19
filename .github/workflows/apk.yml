@@ -6,8 +6,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "index.html"
-      - "manifest.webmanifest"
+      - "loader/**"
       - "icon-*.png"
       - "assets/**"
       - "capacitor.config.json"
@@ -36,7 +35,8 @@ jobs:
       - name: 웹 파일 준비
         run: |
           mkdir -p www
-          cp index.html manifest.webmanifest icon-*.png www/
+          cp loader/index.html www/index.html
+          cp icon-*.png www/
 
       - name: Capacitor 설치
         run: npm install --no-audit --no-fund

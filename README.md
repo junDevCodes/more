@@ -43,7 +43,7 @@ https://github.com/junDevCodes/more/releases/latest/download/more.apk
 ```
 
 1. 받은 `more.apk`를 열어 설치 (처음 한 번은 "출처를 알 수 없는 앱 설치" 허용)
-2. 새 버전도 같은 링크로 받아 **덮어 설치**하면 기록이 그대로 유지돼요
+2. **한 번만 설치하면 끝.** 앱이 열릴 때마다 최신 버전을 불러와서, 기능이 바뀌어도 다시 설치할 필요가 없어요 (새 버전이 적용되면 알림이 떠요). 처음 실행만 인터넷이 필요하고, 그다음부터는 오프라인에서도 열려요.
 
 ### 웹앱 (설치형)
 
@@ -98,6 +98,7 @@ index.html             앱 전체 (HTML·CSS·JS 한 파일, 외부 라이브러
 manifest.webmanifest   웹앱 설치 정보
 sw.js                  오프라인 캐시
 capacitor.config.json  APK 포장 설정 (Capacitor)
+loader/index.html      APK 껍데기: 최신 웹앱을 열고, 이전 버전 기록을 한 번 옮김
 .github/workflows/
   apk.yml              main에 올리면 APK 빌드 → Releases
   pages.yml            main에 올리면 웹앱 → GitHub Pages

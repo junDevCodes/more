@@ -1161,7 +1161,7 @@ function vSettings(){const eq=S.cfg.eq;const known=EQUIP.length;const checked=EQ
     <label for="importf" style="cursor:pointer"><span>백업 파일에서 복원</span><span class="sub">덮어쓰기</span></label></div>
    <input type="file" id="importf" accept="application/json,.json" class="sr">
    <p class="note" style="margin:0 4px">기록은 이 휴대폰 안에만 있어요. 폰을 바꾸거나 브라우저 데이터를 지우기 전에 백업 파일을 저장해 두세요.</p>`:""}
-   <p class="sync" id="sync"></p>
+   <p class="sync" id="sync"></p>${PWA?`<p class="sync" style="margin-top:-8px">MORE ${APP_VERSION}</p>`:""}
   </main>`}
 function sheetList(){const s=S.sessions[today()];if(!s)return"";
   return `<div class="sheet-bg" data-act="close"><div class="sheet" role="dialog" aria-label="운동 목록" data-stop><div class="between"><h2>${DAYS[s.day].name} 운동</h2><button class="iconbtn plain" data-act="close" aria-label="닫기">${I.x}</button></div>
@@ -1243,11 +1243,11 @@ async function pinPress(k){if(Date.now()<lockUntil){pinMsg="잠시 후 다시 �
   if(pinStage==="confirm"){if(pin!==pinFirst){pinStage="new";pinMsg="PIN이 달라요. 처음부터 다시";render();return}
     const salt=[...crypto.getRandomValues(new Uint8Array(8))].map(b=>b.toString(16).padStart(2,"0")).join("");
     try{localStorage.setItem(AUTH_KEY,JSON.stringify({salt,h:await hashPin(pin,salt),fails:0}))}catch(e){}
-    pinStage="enter";pinMsg="";unlocked=true;go(S.view==="lockchange"?"settings":"home");toast("PIN을 설정했어요");return}
+    pinStage="enter";pinMsg="";unlocked=true;go(S.view==="lockchange"?"settings":"home");toast("PIN을 설정했어요");try{localStorage.setItem("more-version",APP_VERSION)}catch(e){}Sync.run();return}
   const a=authGet();if(!a){pinStage="new";render();return}
   if(await hashPin(pin,a.salt)===a.h){a.fails=0;try{localStorage.setItem(AUTH_KEY,JSON.stringify(a))}catch(e){}
     if(pinStage==="change"){pinStage="new";pinMsg="새 PIN을 눌러주세요";render();return}
-    unlocked=true;pinMsg="";render();Sync.run();return}
+    unlocked=true;pinMsg="";render();Sync.run();versionNotice();return}
   a.fails=(a.fails||0)+1;try{localStorage.setItem(AUTH_KEY,JSON.stringify(a))}catch(e){}
   if(a.fails>=5){lockUntil=Date.now()+30000;pinMsg="5번 틀렸어요. 30초 뒤에 다시";a.fails=0;try{localStorage.setItem(AUTH_KEY,JSON.stringify(a))}catch(e){}}else pinMsg="PIN이 맞지 않아요 ("+a.fails+"/5)";render()}
 document.addEventListener("visibilitychange",()=>{if(!PWA)return;if(document.visibilityState==="visible"&&unlocked)Sync.run();if(document.visibilityState==="hidden"){hiddenAt=Date.now();if(Sync.t){clearTimeout(Sync.t);Sync.run()}}else if(hiddenAt&&Date.now()-hiddenAt>5*60000){unlocked=false;pinStage="enter";pinBuf="";render()}});
@@ -1364,6 +1364,17 @@ document.addEventListener("change",e=>{const id=e.target.id;
 });
 document.addEventListener("visibilitychange",async()=>{if(document.visibilityState==="visible"&&db){await loadCloud();if(!sheet)render()}});
 
+/* ---------- 버전 · 이전 앱에서 기록 옮기기 ---------- */
+const APP_VERSION="1.1.0";
+const WHATS_NEW="앱을 다시 설치하지 않아도 자동으로 최신 버전이 적용돼요. 뒤로가기 버튼은 이전 화면으로 돌아가요.";
+(function importFromHash(){if(!PWA||!location.hash.startsWith("#import="))return;
+  try{const raw=decodeURIComponent(location.hash.slice(8));const bin=atob(raw);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    const data=JSON.parse(new TextDecoder().decode(u));
+    for(const k in data)if(k.startsWith("more:")||k==="more-sync"||k==="more-auth"||k==="more-tomb"){if(localStorage.getItem(k)===null||k.startsWith("more:"))localStorage.setItem(k,data[k])}
+    localStorage.setItem("more-imported","1")}catch(e){}
+  history.replaceState(null,"",location.pathname)})();
+function versionNotice(){if(!PWA)return;let last=null;try{last=localStorage.getItem("more-version");localStorage.setItem("more-version",APP_VERSION)}catch(e){}
+  if(last&&last!==APP_VERSION)setTimeout(()=>{sheet=()=>`<div class="sheet-bg" data-act="close"><div class="sheet" role="dialog" aria-label="새 버전" data-stop><div class="between"><h2>새 버전 ${APP_VERSION}</h2><button class="iconbtn plain" data-act="close" aria-label="닫기">${I.x}</button></div><p style="margin:0;line-height:1.6">${esc(WHATS_NEW)}</p><button class="btn" data-act="close">확인</button></div></div>`;render()},400)}
 /* ---------- 시작 ---------- */
 loadLocal();
 try{history.replaceState({v:"home",root:1},"");history.pushState({v:"home",guard:1},"")}catch(e){}

@@ -2,6 +2,10 @@
   "appId": "com.jundevcodes.more",
   "appName": "MORE",
   "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": ["jundevcodes.github.io"]
+  },
   "android": {
     "backgroundColor": "#111418"
   }
