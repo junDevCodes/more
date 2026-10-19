@@ -29,7 +29,7 @@
 - **체육관 기구 맞춤** — 없는 기구를 끄면 허리에 안전한 대체 운동으로 바뀌어요.
 - **홈트 모드** — 헬스장에 못 가는 날은 맨몸 하체 루틴으로.
 - **몸 · 식단** — 체중·인바디 그래프, 마이옵티멀 식단 4끼 체크.
-- **PIN 잠금 · 오프라인 · 백업** — 기록은 기본적으로 이 휴대폰 안에만 저장돼요.
+- **지문 · PIN 잠금 · 오프라인 · 백업** — 기록은 기본적으로 이 휴대폰 안에만 저장돼요.
 - **원격 동기화 (선택)** — 비공개 GitHub 저장소와 양방향 동기화.
 
 ## 설치
@@ -98,7 +98,8 @@ index.html             앱 전체 (HTML·CSS·JS 한 파일, 외부 라이브러
 manifest.webmanifest   웹앱 설치 정보
 sw.js                  오프라인 캐시
 capacitor.config.json  APK 포장 설정 (Capacitor)
-loader/index.html      APK 껍데기: 최신 웹앱을 열고, 이전 버전 기록을 한 번 옮김
+loader/index.html      (1.0.4) 이전 APK 기록을 웹앱 쪽으로 한 번 옮기던 껍데기
+                       지금 APK는 server.url로 최신 웹앱을 직접 열고, 지문 플러그인을 씀
 .github/workflows/
   apk.yml              main에 올리면 APK 빌드 → Releases
   pages.yml            main에 올리면 웹앱 → GitHub Pages

@@ -1155,7 +1155,7 @@ function vSettings(){const eq=S.cfg.eq;const known=EQUIP.length;const checked=EQ
      <label class="sr" for="synctoken">토큰</label><input id="synctoken" class="txt" type="password" autocomplete="off" placeholder="GitHub 토큰 (github_pat_...)" style="height:44px">
      <button class="btn sm" type="submit">연결</button></form>`}
    <h2 style="margin:4px 4px 0;font-size:13px;color:var(--muted)">잠금</h2>
-   <div class="setlist"><button data-act="pinchange"><span>PIN 바꾸기</span><span class="sub">${I.fwd}</span></button><button data-act="lock"><span>지금 잠그기</span><span class="sub">앱을 5분 넘게 떠나면 자동 잠금</span></button></div>
+   <div class="setlist">${Bio.avail?`<button data-act="biotoggle"><span>지문으로 잠금 해제</span><span class="sub" style="color:${Bio.on()?"var(--accent)":"var(--muted)"};font-weight:600">${Bio.on()?"켜짐":"꺼짐"}</span></button>`:""}<button data-act="pinchange"><span>PIN 바꾸기</span><span class="sub">${I.fwd}</span></button><button data-act="lock"><span>지금 잠그기</span><span class="sub">앱을 5분 넘게 떠나면 자동 잠금</span></button></div>
    <h2 style="margin:4px 4px 0;font-size:13px;color:var(--muted)">백업</h2>
    <div class="setlist"><button data-act="export"><span>기록 백업 파일 저장</span><span class="sub">JSON</span></button>
     <label for="importf" style="cursor:pointer"><span>백업 파일에서 복원</span><span class="sub">덮어쓰기</span></label></div>
@@ -1226,6 +1226,14 @@ const Sync={key:"more-sync",tombKey:"more-tomb",t:null,busy:false,again:false,st
 /* ---------- PIN 잠금 (앱 버전) ---------- */
 const AUTH_KEY="more-auth";let unlocked=!PWA,pinBuf="",pinStage="enter",pinFirst="",pinMsg="",lockUntil=0,hiddenAt=0;
 const authGet=()=>{try{return JSON.parse(localStorage.getItem(AUTH_KEY)||"null")}catch(e){return null}};
+/* 지문 잠금 해제 (APK 안에서만, 기기에 지문이 등록돼 있을 때) */
+const Bio={p(){return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.BiometricAuthNative},avail:null,
+ on(){try{return localStorage.getItem("more-bio")!=="0"}catch(e){return true}},
+ async check(){const p=this.p();if(!p){this.avail=false;return false}try{const r=await p.checkBiometry();this.avail=!!(r&&r.isAvailable)}catch(e){this.avail=false}return this.avail},
+ async auth(){const p=this.p();if(!p)return false;try{await p.internalAuthenticate({reason:"MORE 잠금 해제",cancelTitle:"PIN 입력",androidTitle:"MORE",androidSubtitle:"지문으로 잠금 해제",androidConfirmationRequired:false,allowDeviceCredential:false});return true}catch(e){return false}}};
+let bioTried=false;
+async function tryBio(){if(unlocked||!authGet()||pinStage!=="enter"||!Bio.on())return;if(Bio.avail===null)await Bio.check();if(!Bio.avail)return;
+  if(await Bio.auth()){unlocked=true;pinMsg="";render();Sync.run();versionNotice()}}
 async function hashPin(pin,salt){const d=new TextEncoder().encode(salt+":"+pin);const h=await crypto.subtle.digest("SHA-256",d);return[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("")}
 function vLock(){const a=authGet();if(!a&&pinStage==="enter")pinStage="new";
   const title=pinStage==="new"?"PIN 만들기":pinStage==="confirm"?"한 번 더 입력":pinStage==="change"?"현재 PIN":"MORE 잠금 해제";
@@ -1235,6 +1243,7 @@ function vLock(){const a=authGet();if(!a&&pinStage==="enter")pinStage="new";
    <div class="dots" aria-label="${pinBuf.length}자리 입력됨">${[0,1,2,3].map(i=>`<i class="${i<pinBuf.length?"on":""}"></i>`).join("")}</div>
    <p class="note" role="status" style="min-height:20px;margin:0;color:var(--warn)">${esc(pinMsg)}</p>
    <div class="pad">${keys.map(k=>k===""?"<span></span>":k==="del"?`<button data-pin="del" aria-label="지우기">${I.back}</button>`:`<button data-pin="${k}">${k}</button>`).join("")}</div>
+   ${pinStage==="enter"&&Bio.avail&&Bio.on()?`<button class="btn ghost" data-act="bio" style="margin-top:4px">지문으로 열기</button>`:""}
    ${pinStage==="new"||pinStage==="confirm"?`<p class="note" style="text-align:center;margin:0">기록은 이 휴대폰 안에만 저장돼요. PIN을 잊으면 앱 데이터를 지워야 해서, 설정에서 백업 파일을 가끔 저장해 두세요.</p>`:""}</main>`}
 async function pinPress(k){if(Date.now()<lockUntil){pinMsg="잠시 후 다시 시도하세요";render();return}
   if(k==="del"){pinBuf=pinBuf.slice(0,-1);render();return}if(pinBuf.length>=4)return;pinBuf+=k;render();if(pinBuf.length<4)return;
@@ -1250,10 +1259,10 @@ async function pinPress(k){if(Date.now()<lockUntil){pinMsg="잠시 후 다시 �
     unlocked=true;pinMsg="";render();Sync.run();versionNotice();return}
   a.fails=(a.fails||0)+1;try{localStorage.setItem(AUTH_KEY,JSON.stringify(a))}catch(e){}
   if(a.fails>=5){lockUntil=Date.now()+30000;pinMsg="5번 틀렸어요. 30초 뒤에 다시";a.fails=0;try{localStorage.setItem(AUTH_KEY,JSON.stringify(a))}catch(e){}}else pinMsg="PIN이 맞지 않아요 ("+a.fails+"/5)";render()}
-document.addEventListener("visibilitychange",()=>{if(!PWA)return;if(document.visibilityState==="visible"&&unlocked)Sync.run();if(document.visibilityState==="hidden"){hiddenAt=Date.now();if(Sync.t){clearTimeout(Sync.t);Sync.run()}}else if(hiddenAt&&Date.now()-hiddenAt>5*60000){unlocked=false;pinStage="enter";pinBuf="";render()}});
+document.addEventListener("visibilitychange",()=>{if(!PWA)return;if(document.visibilityState==="visible"&&unlocked)Sync.run();if(document.visibilityState==="visible"&&!unlocked){bioTried=true;tryBio()}if(document.visibilityState==="hidden"){hiddenAt=Date.now();if(Sync.t){clearTimeout(Sync.t);Sync.run()}}else if(hiddenAt&&Date.now()-hiddenAt>5*60000){unlocked=false;pinStage="enter";pinBuf="";render()}});
 /* ---------- 렌더 ---------- */
 let sheet=null,adjVal=0;
-function render(){if(!unlocked){document.getElementById("app").innerHTML=vLock();document.getElementById("layer").innerHTML="";return}const v={home:vHome,workout:vWorkout,summary:vSummary,guide:vGuide,history:vHistory,body:vBody,diet:vDiet,settings:vSettings}[S.view]||vHome;
+function render(){if(!unlocked){document.getElementById("app").innerHTML=vLock();document.getElementById("layer").innerHTML="";if(!bioTried){bioTried=true;tryBio()}return}const v={home:vHome,workout:vWorkout,summary:vSummary,guide:vGuide,history:vHistory,body:vBody,diet:vDiet,settings:vSettings}[S.view]||vHome;
   document.getElementById("app").innerHTML=v();
   document.getElementById("layer").innerHTML=sheet?sheet():"";syncSheetHistory();updSync();startAnims();if(PWA)Sync.paint()}
 function toast(msg){const el=document.createElement("div");el.className="toast";el.setAttribute("role","status");el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2200)}
@@ -1338,6 +1347,8 @@ document.addEventListener("click",e=>{
      const blob=new Blob([JSON.stringify({app:"more",v:1,at:new Date().toISOString(),data:o})],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="more-backup-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("백업 파일을 저장했어요");break}
    case"syncnow":Sync.run(true);break;
    case"syncoff":Sync.setCfg(null);render();toast("연결을 끊었어요");break;
+   case"bio":tryBio();break;
+   case"biotoggle":try{localStorage.setItem("more-bio",Bio.on()?"0":"1")}catch(e){}render();break;
    case"pinchange":unlocked=false;pinStage="change";pinBuf="";pinMsg="";render();break;
    case"lock":unlocked=false;pinStage="enter";pinBuf="";pinMsg="";render();break;
    case"emergshow":sheet=sheetEmerg;render();break;
@@ -1365,8 +1376,8 @@ document.addEventListener("change",e=>{const id=e.target.id;
 document.addEventListener("visibilitychange",async()=>{if(document.visibilityState==="visible"&&db){await loadCloud();if(!sheet)render()}});
 
 /* ---------- 버전 · 이전 앱에서 기록 옮기기 ---------- */
-const APP_VERSION="1.1.0";
-const WHATS_NEW="앱을 다시 설치하지 않아도 자동으로 최신 버전이 적용돼요. 뒤로가기 버튼은 이전 화면으로 돌아가요.";
+const APP_VERSION="1.2.0";
+const WHATS_NEW="지문으로 잠금을 풀 수 있어요 (설정 → 잠금에서 끄고 켤 수 있어요). 앱을 다시 설치하지 않아도 최신 버전이 자동으로 적용돼요.";
 (function importFromHash(){if(!PWA||!location.hash.startsWith("#import="))return;
   try{const raw=decodeURIComponent(location.hash.slice(8));const bin=atob(raw);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
     const data=JSON.parse(new TextDecoder().decode(u));
@@ -1377,6 +1388,7 @@ function versionNotice(){if(!PWA)return;let last=null;try{last=localStorage.getI
   if(last&&last!==APP_VERSION)setTimeout(()=>{sheet=()=>`<div class="sheet-bg" data-act="close"><div class="sheet" role="dialog" aria-label="새 버전" data-stop><div class="between"><h2>새 버전 ${APP_VERSION}</h2><button class="iconbtn plain" data-act="close" aria-label="닫기">${I.x}</button></div><p style="margin:0;line-height:1.6">${esc(WHATS_NEW)}</p><button class="btn" data-act="close">확인</button></div></div>`;render()},400)}
 /* ---------- 시작 ---------- */
 loadLocal();
+if(PWA)Bio.check().then(()=>{if(!unlocked||S.view==="settings")render()});
 try{history.replaceState({v:"home",root:1},"");history.pushState({v:"home",guard:1},"")}catch(e){}
 if(S.sessions[today()]&&S.sessions[today()].status==="active")S.view="home";
 render();

@@ -3,8 +3,11 @@
   "appName": "MORE",
   "webDir": "www",
   "server": {
+    "url": "https://jundevcodes.github.io/more/",
     "androidScheme": "https",
-    "allowNavigation": ["jundevcodes.github.io"]
+    "allowNavigation": [
+      "jundevcodes.github.io"
+    ]
   },
   "android": {
     "backgroundColor": "#111418"
