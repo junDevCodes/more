@@ -1255,9 +1255,24 @@ document.addEventListener("visibilitychange",()=>{if(!PWA)return;if(document.vis
 let sheet=null,adjVal=0;
 function render(){if(!unlocked){document.getElementById("app").innerHTML=vLock();document.getElementById("layer").innerHTML="";return}const v={home:vHome,workout:vWorkout,summary:vSummary,guide:vGuide,history:vHistory,body:vBody,diet:vDiet,settings:vSettings}[S.view]||vHome;
   document.getElementById("app").innerHTML=v();
-  document.getElementById("layer").innerHTML=sheet?sheet():"";updSync();startAnims();if(PWA)Sync.paint()}
+  document.getElementById("layer").innerHTML=sheet?sheet():"";syncSheetHistory();updSync();startAnims();if(PWA)Sync.paint()}
 function toast(msg){const el=document.createElement("div");el.className="toast";el.setAttribute("role","status");el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2200)}
-function go(view,arg){S.view=view;S.arg=arg??null;sheet=null;render();window.scrollTo(0,0)}
+/* 뒤로가기: 화면 이동과 시트를 브라우저 기록에 쌓아서 안드로이드 뒤로가기 버튼이 앱을 끄지 않게 */
+let sheetPushed=false,ignorePop=false,exitArmed=0;
+function go(view,arg){const st={v:view,arg:arg??null};
+  if(sheetPushed){sheetPushed=false;history.replaceState(st,"")}else history.pushState(st,"");
+  S.view=view;S.arg=arg??null;sheet=null;render();window.scrollTo(0,0)}
+function syncSheetHistory(){if(sheet&&!sheetPushed){sheetPushed=true;history.pushState({sheet:1},"")}
+  else if(!sheet&&sheetPushed){sheetPushed=false;ignorePop=true;history.back()}}
+window.addEventListener("popstate",e=>{
+  if(ignorePop){ignorePop=false;return}
+  if(sheetPushed){sheetPushed=false;sheet=null;render();return}
+  const st=e.state||{};
+  if(!unlocked){history.pushState({v:"home",guard:1},"");return}
+  if(st.root){if(Date.now()-exitArmed<2000){history.back();return}
+    exitArmed=Date.now();if(S.view!=="home"){S.view="home";S.arg=null;render()}history.pushState({v:"home",guard:1},"");toast("한 번 더 누르면 종료돼요");return}
+  if(st.v){S.view=st.v;S.arg=st.arg??null;sheet=null;render();window.scrollTo(0,0);return}
+  S.view="home";S.arg=null;render()});
 
 /* ---------- 애니메이션 ---------- */
 const anims=[];let raf=null;const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1287,8 +1302,8 @@ document.addEventListener("click",e=>{
    case"set":{const ci=it.sets.findIndex(x=>x===null);if(ci<0)break;recordSet(it,ci,v);persist();render();break}
    case"cycle":{const k=+b.dataset.k;const r=it.sets[k];if(r===null&&k!==it.sets.findIndex(x=>x===null))break;
      if(r==="stop")break;it.sets[k]=r===null?"ok":r==="ok"?"fail":null;persist();render();break}
-   case"next":s.cur=Math.min(s.items.length-1,(s.cur||0)+1);persist();go("workout");break;
-   case"prev":if(s.cur>0){s.cur--;persist();go("workout")}break;
+   case"next":s.cur=Math.min(s.items.length-1,(s.cur||0)+1);persist();render();window.scrollTo(0,0);break;
+   case"prev":if(s.cur>0){s.cur--;persist();render();window.scrollTo(0,0)}break;
    case"skip":{const nx=s.items.findIndex((x,k)=>k>s.cur&&!itemDone(x));s.cur=nx<0?Math.min(s.items.length-1,s.cur+1):nx;persist();go("workout");break}
    case"finish":s.status="done";s.finishedAt=Date.now();applyRec(s);persist();go("summary",s.date);break;
    case"pick":it.pick=v;persist();render();break;
@@ -1307,7 +1322,7 @@ document.addEventListener("click",e=>{
    case"adjust":{const ci=it.sets.findIndex(x=>x===null);adjVal=it.ws[ci];sheet=sheetAdjust;render();break}
    case"adj":{const p=PROG[it.id];adjVal=Math.max(0,adjVal+(+v)*p.step);document.getElementById("adjv").textContent=fmtW(adjVal);break}
    case"adjsave":{const ci=it.sets.findIndex(x=>x===null);for(let j=ci;j<it.ws.length;j++)it.ws[j]=adjVal;it.w=adjVal;S.cfg.rec[it.id]=Object.assign(S.cfg.rec[it.id]||{stall:0},{w:adjVal});saveCfg();persist();sheet=null;render();break}
-   case"gback":go(S.prev&&S.prev!=="guide"?S.prev:"home");break;
+   case"gback":history.back();break;
    case"gtab":S.gtab=v;render();break;
    case"anim":{const a=anims.find(x=>x.pl);if(a){a.paused=!a.paused;b.innerHTML=a.paused?I.play:I.pause;b.setAttribute("aria-label",a.paused?"재생":"일시정지")}break}
    case"master":{const id=S.arg;if(S.cfg.mastered[id])delete S.cfg.mastered[id];else S.cfg.mastered[id]=1;saveCfg();render();break}
@@ -1351,6 +1366,7 @@ document.addEventListener("visibilitychange",async()=>{if(document.visibilitySta
 
 /* ---------- 시작 ---------- */
 loadLocal();
+try{history.replaceState({v:"home",root:1},"");history.pushState({v:"home",guard:1},"")}catch(e){}
 if(S.sessions[today()]&&S.sessions[today()].status==="active")S.view="home";
 render();
 (async()=>{if(PWA){syncState="local";updSync();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});return}
