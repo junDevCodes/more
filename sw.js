@@ -1,5 +1,5 @@
 // MORE 오프라인 캐시. 앱 파일은 온라인이면 새로 받고(업데이트 반영), 오프라인이면 저장해 둔 것을 쓴다.
-const CACHE = "more-v6";
+const CACHE = "more-v7";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", (e) => {

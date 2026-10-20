@@ -769,6 +769,62 @@ calfraise:{name:"카프 레이즈",tgt:"종아리",sets:"3 × 20",yt:"카프 레
   back:["상체는 곧게. 허리 부담 거의 없음"]},
 });
 EX.glutebridge.steps.splice(2,0,"마지막에 꼬리뼈를 살짝 말아 올리듯 마무리 (허리 대신 엉덩이로)");
+/* ---------- 집 장비 (아령 7kg 1개 · 풀업바 · 어시스트 밴드) ---------- */
+Object.assign(EX,{
+h_pullup:{name:"밴드 어시스트 풀업",tgt:"등",sets:"3 × 5~8",yt:"밴드 어시스트 풀업 하는법",
+  bg:L2(66,14,134,14,"eq")+floor(190),hl:["back"],fs:1,
+  A:EX.assist.A,B:EX.assist.B,
+  ph:EX.assist.ph,view:"밴드를 풀업바에 걸고 무릎(또는 발)을 밴드에 올린 모습",
+  setup:["밴드를 풀업바 가운데에 고리로 단단히 건다","의자를 딛고 올라가 한쪽 무릎(어려우면 발)을 밴드에 끼운다","손은 어깨너비보다 조금 넓게, 손바닥이 앞을 향하게"],
+  steps:["매달린 채 어깨를 아래로 끌어내리며 시작","팔꿈치를 옆구리로 2초 동안 당긴다","턱이 바 근처까지 오면 3초 동안 내려간다","5회도 안 되면 의자에 발을 대고 내려가는 것만(3~5초) 연습"],
+  breath:"당길 때 내쉰다",
+  miss:["다리를 흔들어 반동을 쓴다","끝까지 안 내려가고 절반만 한다"],
+  back:["매달리는 것 자체는 허리가 늘어나서 괜찮다. 다리를 흔드는 반동만 금지","밴드에 발을 넣고 뺄 때 의자를 꼭 딛기. 밴드가 튕기지 않게 천천히"]},
+h_row:{name:"원암 덤벨 로우 (7kg)",tgt:"등",sets:"3 × 12 (한쪽씩)",yt:"원암 덤벨로우 의자 집에서",
+  bg:EX.dbrow.bg,hl:["back"],fs:1,A:EX.dbrow.A,B:EX.dbrow.B,att:[{t:"db",at:"hand"}],ph:EX.dbrow.ph,view:"연한 팔·다리 = 의자나 침대를 짚은 쪽",
+  setup:["튼튼한 의자나 침대 모서리에 한쪽 손과 무릎을 올린다","반대쪽 발은 바닥에, 등은 평평하게","아령은 무릎을 굽혀서 바닥에서 집는다"],
+  steps:["팔을 늘어뜨린 상태에서 시작","팔꿈치를 천장 쪽으로, 아령을 골반 쪽으로 2초 동안 당긴다","3초 동안 내린다","쉬워지면 한쪽 15회까지 늘린다"],
+  breath:"당길 때 내쉰다",miss:["몸통을 돌리면서 당긴다","등이 둥글게 말린다"],
+  back:["짚은 팔로 상체 무게를 받쳐서 허리 부담을 줄인다. 등은 끝까지 평평하게"]},
+h_press:{name:"앉아서 원암 숄더프레스 (7kg)",tgt:"어깨",sets:"3 × 10 (한쪽씩)",yt:"시티드 원암 덤벨 숄더프레스",
+  bg:floor()+seat(58,112,150,58,70),hl:["ua"],fs:1,A:EX.dbpress.A,B:EX.dbpress.B,att:[{t:"db",at:"hand"}],ph:EX.dbpress.ph,
+  setup:["등받이가 있는 의자에 깊이 앉아 등을 붙인다","아령을 한 손에 들고 어깨 높이로"],
+  steps:["반대 손은 배에 올려 갈비뼈가 들리지 않는지 느낀다","2초 동안 머리 위로 민다","3초 동안 어깨 높이로 내린다","한쪽 끝나면 반대쪽"],
+  breath:"밀 때 내쉰다",miss:["허리를 등받이에서 띄우고 젖힌다","몸이 한쪽으로 기운다"],
+  back:["서서 하지 않는다. 등받이가 있어야 허리가 젖혀지지 않는다","허리가 뜨면 거기까지만 올린다"]},
+h_curl:{name:"덤벨 컬 (7kg)",tgt:"팔 앞(이두)",sets:"3 × 10 (한쪽씩)",yt:"원암 덤벨 컬 앉아서",
+  bg:floor(),hl:["ua"],A:EX.curl.A,B:EX.curl.B,att:[{t:"db",at:"hand"}],ph:EX.curl.ph,
+  setup:["의자에 등을 붙이고 앉거나 벽에 등을 대고 선다","아령을 한 손에, 손바닥이 앞을 보게"],
+  steps:["팔꿈치를 옆구리에 고정한다","2초 동안 들어 올린다","3초 동안 내린다","한쪽 끝나면 반대쪽"],
+  breath:"들 때 내쉰다",miss:["몸을 뒤로 젖히며 반동"],
+  back:["허리를 젖혀 반동을 쓰는 순간 그 세트는 끝"]},
+h_kickback:{name:"덤벨 킥백 (7kg)",tgt:"팔 뒤(삼두)",sets:"3 × 12 (한쪽씩)",yt:"원암 덤벨 킥백 의자",
+  bg:EX.dbrow.bg,hl:["ua"],fs:1,
+  A:Object.assign({},EX.dbrow.A,{hand:[104,122],eb:1}),B:{hand:[74,98]},att:[{t:"db",at:"hand"}],
+  ph:[[2,"팔을 뒤로 펴기 (2초)","AB"],[1,"꽉","B"],[2,"천천히 돌아오기","BA"],[.4,"","A"]],view:"연한 팔·다리 = 의자나 침대를 짚은 쪽",
+  setup:["원암 로우와 같은 자세로 한쪽 손과 무릎을 의자에 올린다","위팔을 몸통 옆에 붙여 바닥과 평행하게 고정"],
+  steps:["팔꿈치는 움직이지 않고 2초 동안 팔을 뒤로 쭉 편다","끝에서 1초 팔 뒤쪽을 조인다","2초 동안 돌아온다"],
+  breath:"펼 때 내쉰다",miss:["팔꿈치가 아래로 떨어진다","몸통을 돌린다"],
+  back:["짚은 팔로 상체를 받친 자세라 허리 부담이 적다. 등은 평평하게"]},
+h_goblet:{name:"고블릿 의자 스쿼트 (7kg)",tgt:"허벅지 앞·엉덩이",sets:"3 × 12",yt:"고블릿 박스 스쿼트 자세",
+  bg:EX.gobletbox.bg,hl:["th"],A:EX.gobletbox.A,B:EX.gobletbox.B,att:[{t:"db",at:"hand"}],ph:EX.gobletbox.ph,
+  setup:["아령을 세로로 들어 가슴 앞에 붙인다","뒤에 튼튼한 의자를 두고 발은 어깨너비"],
+  steps:["가슴을 세운 채 엉덩이를 뒤로 빼며 3초 동안 앉는다","엉덩이가 의자에 살짝 닿으면 멈춘다. 털썩 앉지 않기","발바닥 전체로 밀며 일어선다"],
+  breath:"앉으며 들이쉬고 배에 힘, 일어나며 내쉰다",miss:["의자에 털썩 앉는다","허리가 둥글게 말린다","무릎이 안쪽으로 모인다"],
+  back:["의자가 깊이를 정해줘서 허리가 말리지 않는다. 헬스장 스미스 스쿼트 대신 하는 운동과 같은 동작"]},
+h_bridge:{name:"덤벨 글루트 브릿지 (7kg)",tgt:"엉덩이·허벅지 뒤",sets:"3 × 15",yt:"덤벨 글루트 브릿지",
+  bg:EX.glutebridge.bg,hl:["th"],A:EX.glutebridge.A,B:EX.glutebridge.B,ph:EX.glutebridge.ph,
+  setup:["바닥에 누워 무릎을 세우고, 아령을 골반 위에 올려 양손으로 잡는다"],
+  steps:["배에 살짝 힘을 주고 발뒤꿈치로 바닥을 민다","엉덩이를 들어 어깨~무릎이 일직선이 될 때까지","마지막에 꼬리뼈를 살짝 말아 올리듯 마무리","위에서 2초 조이고 천천히 내려온다"],
+  breath:"올릴 때 내쉰다",miss:["허리를 꺾어서 더 높이 올린다"],
+  back:["어깨~무릎 일직선까지만. 그 이상 올리면 허리가 꺾인다"]},
+h_calf:{name:"원레그 카프 레이즈 (7kg)",tgt:"종아리",sets:"3 × 12 (한쪽씩)",yt:"원레그 카프레이즈 덤벨",
+  bg:EX.calfraise.bg,hl:["sh"],A:EX.calfraise.A,B:EX.calfraise.B,ph:EX.calfraise.ph,
+  setup:["한 손은 벽을 짚고, 반대 손에 아령을 든다","아령 든 쪽 다리로 선다"],
+  steps:["뒤꿈치를 최대한 높이 든다","위에서 1초 멈춘다","천천히 내린다","한쪽 끝나면 반대쪽"],
+  breath:"올릴 때 내쉰다",miss:["반동으로 튕긴다"],
+  back:["상체는 곧게. 허리 부담 거의 없음"]},
+});
 
 
 /* ---------- 프로그램 (추천 무게·세트) ---------- */
@@ -787,7 +843,10 @@ const PROG={
  lyingext:{k:"w",start:6,step:2,sets:5,reps:12,wn:"덤벨"}, curl:{k:"w",start:6,step:2,sets:5,reps:12,wn:"한 손 덤벨"},
  glutebridge:{k:"bw",sets:3,reps:"15회 (위에서 2초)"}, chairsquat:{k:"bw",sets:3,reps:"12회"}, wallsit:{k:"bw",sets:3,reps:"30초 버티기"}, calfraise:{k:"bw",sets:3,reps:"20회"},
  inclineplank:{k:"bw",sets:3,reps:"20초 버티기"}, inclinepush:{k:"bw",sets:3,reps:"10회"},
- bagrow:{k:"bw",sets:3,reps:"12회 (한쪽씩)"}, wallslide:{k:"bw",sets:3,reps:"12회"}, bagcurl:{k:"bw",sets:3,reps:"12회"}, gobletbox:{k:"w",start:8,step:2,sets:3,reps:10,wn:"덤벨 1개"},
+ bagrow:{k:"bw",sets:3,reps:"12회 (한쪽씩)"},
+ h_pullup:{k:"bw",sets:3,reps:"5~8회"}, h_row:{k:"bw",sets:3,reps:"7kg · 12회 (한쪽씩)"}, h_press:{k:"bw",sets:3,reps:"7kg · 10회 (한쪽씩)"},
+ h_curl:{k:"bw",sets:3,reps:"7kg · 10회 (한쪽씩)"}, h_kickback:{k:"bw",sets:3,reps:"7kg · 12회 (한쪽씩)"},
+ h_goblet:{k:"bw",sets:3,reps:"7kg · 12회"}, h_bridge:{k:"bw",sets:3,reps:"7kg · 15회"}, h_calf:{k:"bw",sets:3,reps:"7kg · 12회 (한쪽씩)"}, wallslide:{k:"bw",sets:3,reps:"12회"}, bagcurl:{k:"bw",sets:3,reps:"12회"}, gobletbox:{k:"w",start:8,step:2,sets:3,reps:10,wn:"덤벨 1개"},
  walk:{k:"cardio"}, bike:{k:"cardio"}, birddog:{k:"bw",sets:2,reps:"8회 (양쪽)"}, sideplank:{k:"bw",sets:2,reps:"10초 버티기 (양쪽)"}, curlup:{k:"bw",sets:2,reps:"8회 (8초씩)"},
 };
 const DAYS={
@@ -796,8 +855,8 @@ const DAYS={
  d3:{name:"유산소",list:["cardio","birddog","sideplank","curlup"],min:55},
 };
 const ORDER=["d1","d2","d3"];
-const HOME={d1:["deadbug","glutebridge","chairsquat","wallsit","squeeze","calfraise","birddog"],
- d2:["inclineplank","inclinepush","bagrow","wallslide","bagcurl","deadbug","birddog"]};
+const HOME={d1:["deadbug","h_goblet","h_bridge","wallsit","squeeze","h_calf","birddog"],
+ d2:["inclineplank","inclinepush","h_pullup","h_row","h_press","wallslide","h_curl","h_kickback"]};
 const STAGES=[
  {t:"빠른 걷기",d:"시속 6.5~7.5km, 대화는 되는데 숨이 찬 정도. 경사는 0~5%로 낮게",m:45},
  {t:"걷기 + 달리기 1분",d:"걷기 5분 → [천천히 달리기 1분 + 걷기 2분] × 8 → 걷기 5분",m:35},
@@ -1402,8 +1461,8 @@ document.addEventListener("change",e=>{const id=e.target.id;
 document.addEventListener("visibilitychange",async()=>{if(document.visibilityState==="visible"&&db){await loadCloud();if(!sheet)render()}});
 
 /* ---------- 버전 · 이전 앱에서 기록 옮기기 ---------- */
-const APP_VERSION="1.3.0";
-const WHATS_NEW="상체 날에도 '홈트로 하기'가 생겼어요. 인클라인 플랭크·푸시업, 가방 원암 로우, 벽 슬라이드, 가방 컬, 데드버그, 버드독 7종목이에요.";
+const APP_VERSION="1.4.0";
+const WHATS_NEW="홈트를 집 장비(아령 7kg, 풀업바, 어시스트 밴드)에 맞춰 바꿨어요. 상체: 플랭크, 푸시업, 밴드 풀업, 원암 로우, 숄더프레스, 벽 슬라이드, 컬, 킥백. 하체: 고블릿 의자 스쿼트, 덤벨 브릿지 등.";
 (function importFromHash(){if(!PWA||!location.hash.startsWith("#import="))return;
   try{const raw=decodeURIComponent(location.hash.slice(8));const bin=atob(raw);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
     const data=JSON.parse(new TextDecoder().decode(u));
