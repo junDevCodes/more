@@ -323,7 +323,7 @@ function topLegs(u){ // 힙 어덕션: 위에서 본 모습
   s+=`<ellipse cx="120" cy="58" rx="30" ry="14" class="hd" style="opacity:.25"/>`;
   for(const sg of[-1,1]){const hip=[120+sg*14,62];const d=dir(90-sg*a);const knee=add(hip,d,64),foot=add(knee,d,8);
     s+=ln(hip,knee,"lim",15)+ln(lp(hip,knee,.25),lp(hip,knee,.8),"hl",7);
-    const pd=add(knee,rot(d,sg*90),-12);s+=`<rect x="${f(pd[0]-6)}" y="${f(pd[1]-14)}" width="12" height="28" rx="4" class="padf" transform="rotate(${f(-sg*a)} ${f(pd[0])} ${f(pd[1])})"/>`;
+    const pd=add(knee,rot(d,sg*90),12);s+=`<rect x="${f(pd[0]-6)}" y="${f(pd[1]-14)}" width="12" height="28" rx="4" class="padf" transform="rotate(${f(-sg*a)} ${f(pd[0])} ${f(pd[1])})"/>`;
     s+=ci(foot,7,"hd")}
   s+=ci([120,52],10,"hd");
   return s+`<path d="M 92 172 Q 120 182 148 172" class="arr"/>`+txt(120,195,"무릎 안쪽 패드를 모은다");
@@ -769,6 +769,24 @@ calfraise:{name:"카프 레이즈",tgt:"종아리",sets:"3 × 20",yt:"카프 레
   back:["상체는 곧게. 허리 부담 거의 없음"]},
 });
 EX.glutebridge.steps.splice(2,0,"마지막에 꼬리뼈를 살짝 말아 올리듯 마무리 (허리 대신 엉덩이로)");
+/* ---------- 힙 어브덕션 (벌리기) ---------- */
+function topLegsOut(u){const a=lerp(4,30,u);let s=rect(70,40,100,40,10)+txt(120,22,"위에서 본 모습");
+  s+=`<ellipse cx="120" cy="58" rx="30" ry="14" class="hd" style="opacity:.25"/>`;
+  for(const sg of[-1,1]){const hip=[120+sg*14,62];const d=dir(90-sg*a);const knee=add(hip,d,64),foot=add(knee,d,8);
+    s+=ln(hip,knee,"lim",15);const m=lp(hip,knee,.15);s+=ln(add(m,rot(d,sg*90),-5),add(lp(hip,knee,.45),rot(d,sg*90),-5),"hl",6);
+    const pd=add(knee,rot(d,sg*90),-12);s+=`<rect x="${f(pd[0]-6)}" y="${f(pd[1]-14)}" width="12" height="28" rx="4" class="padf" transform="rotate(${f(-sg*a)} ${f(pd[0])} ${f(pd[1])})"/>`;
+    s+=ci(foot,7,"hd")}
+  s+=ci([120,52],10,"hd");
+  return s+`<path d="M 70 150 Q 52 168 66 182" class="arr"/><path d="M 170 150 Q 188 168 174 182" class="arr"/>`+txt(120,195,"무릎 바깥 패드를 벌린다")}
+EX.abduct={name:"힙 어브덕션",tgt:"엉덩이 옆 (골반 안정)",sets:"3 × 15",yt:"힙 어브덕션 머신 자세",need:"abduct",alt:["adduct"],
+  custom:topLegsOut,
+  ph:[[2,"벌리기 (2초)","AB"],[1,"꽉","B"],[3,"천천히 모으기 (3초)","BA"],[.5,"","A"]],
+  setup:["등받이에 등과 엉덩이를 붙이고 앉는다","패드가 무릎 바깥쪽에 오게 다리를 올린다","처음엔 가벼운 무게로 시작"],
+  steps:["무릎으로 패드를 2초 동안 벌린다","끝에서 1초 엉덩이 옆을 꽉 조인다","3초 동안 천천히 모은다. 무게가 쿵 내려가지 않게"],
+  breath:"벌릴 때 내쉰다",
+  miss:["상체를 앞으로 숙이거나 들썩인다","반동으로 벌린다"],
+  back:["골반을 잡아주는 엉덩이 옆 근육이라 허리 관리에 자주 쓰이는 운동. 등받이에서 등만 떼지 않으면 된다"]};
+EX.adduct.alt=["abduct"];
 /* ---------- 집 장비 (아령 7kg 1개 · 풀업바 · 어시스트 밴드) ---------- */
 Object.assign(EX,{
 h_pullup:{name:"밴드 어시스트 풀업",tgt:"등",sets:"3 × 5~8",yt:"밴드 어시스트 풀업 하는법",
@@ -831,7 +849,7 @@ h_calf:{name:"원레그 카프 레이즈 (7kg)",tgt:"종아리",sets:"3 × 12 (�
 // k: w=무게, bw=맨몸, as=보조무게(적을수록 어려움), cardio
 const PROG={
  deadbug:{k:"bw",sets:2,reps:"10회 (번갈아)"}, legpress:{k:"w",start:40,step:5,sets:4,reps:12,wn:"원판 무게 합"},
- legcurl_l:{k:"w",start:20,step:5,sets:3,reps:12,wn:"핀 무게"}, adduct:{k:"w",start:25,step:5,sets:3,reps:15,wn:"핀 무게"},
+ legcurl_l:{k:"w",start:20,step:5,sets:3,reps:12,wn:"핀 무게"}, adduct:{k:"w",start:25,step:5,sets:3,reps:15,wn:"핀 무게"}, abduct:{k:"w",start:25,step:5,sets:3,reps:15,wn:"핀 무게"},
  squeeze:{k:"bw",sets:3,reps:"10회 (5초씩)"}, hack:{k:"w",start:20,step:5,sets:4,reps:10,wn:"원판 무게 합"},
  smithsq:{k:"w",start:20,step:5,sets:4,reps:10,wn:"원판 무게 합 (봉 제외)"}, legext:{k:"w",start:25,step:5,sets:3,reps:15,wn:"핀 무게"},
  legcurl_s:{k:"w",start:20,step:5,sets:3,reps:15,wn:"핀 무게"}, kneeup:{k:"bw",sets:3,reps:"10회"}, pushup:{k:"bw",sets:2,reps:"5회 (7초·7초)"},
@@ -850,7 +868,7 @@ const PROG={
  walk:{k:"cardio"}, bike:{k:"cardio"}, birddog:{k:"bw",sets:2,reps:"8회 (양쪽)"}, sideplank:{k:"bw",sets:2,reps:"10초 버티기 (양쪽)"}, curlup:{k:"bw",sets:2,reps:"8회 (8초씩)"},
 };
 const DAYS={
- d1:{name:"하체",list:["deadbug","legpress","legcurl_l","adduct","hack","legext","legcurl_s"],min:60},
+ d1:{name:"하체",list:["deadbug","legpress","legcurl_l","abduct","hack","legext","legcurl_s"],min:60},
  d2:{name:"상체",list:["inclineplank","inclinepush","smithbench","csrow","assist","dbpress","rdelt","pushdown","curl"],min:70},
  d3:{name:"유산소",list:["cardio","birddog","sideplank","curlup"],min:55},
 };
@@ -864,7 +882,7 @@ const STAGES=[
  {t:"3km 연속 달리기",d:"1km 7분 30초~8분 페이스 + 걷기 20분",m:45},
  {t:"4~5km 달리기",d:"거리를 4km → 5km로. 속도는 그다음",m:45},
 ];
-const EQUIP=[["smith","스미스 머신"],["legpress","레그프레스"],["hack","핵스쿼트"],["legcurl_l","라잉 레그컬"],["legcurl_s","시티드 레그컬"],["legext","레그 익스텐션"],["adduct","이너타이 (어덕션)"],["csrow","체스트 서포티드 로우"],["cablerow","시티드 케이블 로우"],["assist","어시스트 풀업"],["latpull","랫풀다운"],["rdelt","펙덱 (리버스 플라이)"],["cable","케이블 머신"],["bar","철봉 / 치닝디핑"],["db","덤벨 + 벤치"],["tread","트레드밀"],["bike","실내 자전거"]];
+const EQUIP=[["smith","스미스 머신"],["legpress","레그프레스"],["hack","핵스쿼트"],["legcurl_l","라잉 레그컬"],["legcurl_s","시티드 레그컬"],["legext","레그 익스텐션"],["abduct","아우터타이 (어브덕션)"],["adduct","이너타이 (어덕션)"],["csrow","체스트 서포티드 로우"],["cablerow","시티드 케이블 로우"],["assist","어시스트 풀업"],["latpull","랫풀다운"],["rdelt","펙덱 (리버스 플라이)"],["cable","케이블 머신"],["bar","철봉 / 치닝디핑"],["db","덤벨 + 벤치"],["tread","트레드밀"],["bike","실내 자전거"]];
 const EQNAME=Object.fromEntries(EQUIP);
 
 /* ---------- 날짜 ---------- */
@@ -1461,8 +1479,8 @@ document.addEventListener("change",e=>{const id=e.target.id;
 document.addEventListener("visibilitychange",async()=>{if(document.visibilityState==="visible"&&db){await loadCloud();if(!sheet)render()}});
 
 /* ---------- 버전 · 이전 앱에서 기록 옮기기 ---------- */
-const APP_VERSION="1.4.0";
-const WHATS_NEW="홈트를 집 장비(아령 7kg, 풀업바, 어시스트 밴드)에 맞춰 바꿨어요. 상체: 플랭크, 푸시업, 밴드 풀업, 원암 로우, 숄더프레스, 벽 슬라이드, 컬, 킥백. 하체: 고블릿 의자 스쿼트, 덤벨 브릿지 등.";
+const APP_VERSION="1.5.0";
+const WHATS_NEW="하체 루틴의 힙 어덕션(모으기)을 힙 어브덕션(벌리기, 아우터타이)으로 바꿨어요. 홈트를 집 장비(아령 7kg, 풀업바, 어시스트 밴드)에 맞춰 바꿨어요. 상체: 플랭크, 푸시업, 밴드 풀업, 원암 로우, 숄더프레스, 벽 슬라이드, 컬, 킥백. 하체: 고블릿 의자 스쿼트, 덤벨 브릿지 등.";
 (function importFromHash(){if(!PWA||!location.hash.startsWith("#import="))return;
   try{const raw=decodeURIComponent(location.hash.slice(8));const bin=atob(raw);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
     const data=JSON.parse(new TextDecoder().decode(u));
